@@ -1,0 +1,21 @@
+[user]
+	email = 51301343+stonespren@users.noreply.github.com
+	name = stonespren
+[init]
+	defaultBranch = main
+[core]
+	editor = nvim
+	pager = delta
+[pull]
+	rebase = true
+[push]
+	autoSetupRemote = true
+[alias]
+	undo = reset --soft HEAD^
+
+[delta]
+	navigate = true
+	side-by-side = true
+	line-numbers = true
+	hyperlinks = true
+	dark = true
