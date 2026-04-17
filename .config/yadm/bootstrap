@@ -1,0 +1,18 @@
+#!/bin/bash
+
+sudo apt install -y git neovim alacritty tmux xclip curl jq zsh gnome-keyring dolphin i3-wm i3status dmenu xorg xinit rfkill network-manager build-essential
+
+
+# Zsh
+if [ "$(basename "$SHELL")" != "zsh" ]; then
+  chsh -s $(which zsh)
+fi
+
+# Zap
+zsh <(curl -s https://raw.githubusercontent.com/zap-zsh/zap/master/install.zsh) --branch release-v1
+
+# Tmux Plugin Manager
+if [ ! -d "$HOME/.tmux/plugins/tpm" ]; then
+  git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
+fi
+
