@@ -1,6 +1,6 @@
 #!/bin/bash
 
-sudo apt install -y git neovim alacritty tmux xclip curl jq zsh gnome-keyring dolphin i3-wm i3status dmenu xorg xinit rfkill network-manager build-essential
+sudo apt install -y git neovim alacritty tmux xclip curl jq zsh gnome-keyring libpam-gnome-keyring dolphin i3-wm i3status dmenu xorg xinit rfkill network-manager build-essential
 
 
 # Zsh
@@ -14,5 +14,16 @@ zsh <(curl -s https://raw.githubusercontent.com/zap-zsh/zap/master/install.zsh) 
 # Tmux Plugin Manager
 if [ ! -d "$HOME/.tmux/plugins/tpm" ]; then
   git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
+fi
+
+# Gnome Keyring PAM
+sudo ~/.config/yadm/gnome-keyring-pam.sh
+
+# Proton Pass
+if [ ! -d "$HOME/.local/bin/pass-cli" ]; then
+  curl -fsSL https://proton.me/download/pass-cli/install.sh | bash
+  mkdir -p ~/.zfunc
+  pass-cli completions zsh > ~/.zfunc/_pass-cli
+  pass-cli login
 fi
 
