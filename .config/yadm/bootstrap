@@ -3,9 +3,29 @@
 sudo apt install -y git neovim alacritty tmux xclip curl jq zsh gnome-keyring libpam-gnome-keyring dolphin i3-wm i3status dmenu xorg xinit rfkill network-manager build-essential
 
 # Helium Browser
-curl -fsSL https://raw.githubusercontent.com/imputnet/helium-linux/main/pubkey.asc | sudo gpg --dearmor -o /usr/share/keyrings/helium.gpg
-echo "deb [signed-by=/usr/share/keyrings/helium.gpg] https://pkg.helium.computer/deb stable main" | sudo tee /etc/apt/sources.list.d/helium.list
-sudo apt update && sudo apt install helium-bin
+# curl -fsSL https://raw.githubusercontent.com/imputnet/helium-linux/main/pubkey.asc | sudo gpg --dearmor -o /usr/share/keyrings/helium.gpg
+# echo "deb [signed-by=/usr/share/keyrings/helium.gpg] https://pkg.helium.computer/deb stable main" | sudo tee /etc/apt/sources.list.d/helium.list
+# sudo apt update && sudo apt install helium-bin
+keyring=/usr/share/keyrings/helium.gpg
+repo_file=/etc/apt/sources.list.d/helium.list
+repo_line='deb [signed-by=/usr/share/keyrings/helium.gpg] https://pkg.helium.computer/deb stable main'
+key_url='https://raw.githubusercontent.com/imputnet/helium-linux/main/pubkey.asc'
+
+tmp_key="$(mktemp)"
+trap 'rm -f "$tmp_key"' EXIT
+
+curl -fsSL "$key_url" | gpg --dearmor >"$tmp_key"
+
+if ! sudo test -f "$keyring" || ! cmp -s "$tmp_key" "$keyring"; then
+  sudo install -Dm644 "$tmp_key" "$keyring"
+fi
+
+if ! sudo test -f "$repo_file" || ! sudo grep -Fxq "$repo_line" "$repo_file"; then
+  printf '%s\n' "$repo_line" | sudo tee "$repo_file" >/dev/null
+fi
+
+sudo apt update
+sudo apt install -y helium-bin
 
 
 # Zsh
@@ -38,11 +58,9 @@ if [ ! -d "$HOME/.local/bin/pass-cli" ]; then
       > ~/.ssh/id_ed25519) \
     >(jq -r '.item.content.content.SshKey.public_key' \
       > ~/.ssh/id_ed25519.pub) \
-    >(jq -r '.item.content.extra_fields[1].content.Text' \
-      >> ~/.ssh/known_hosts) \
     > /dev/null &&
   chmod 600 ~/.ssh/id_ed25519 &&
-  chmod 644 ~/.ssh/id_ed25519.pub ~/.ssh/known_hosts
+  chmod 644 ~/.ssh/id_ed25519.pub
 fi
 
 
