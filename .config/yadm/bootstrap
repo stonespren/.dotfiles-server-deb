@@ -2,6 +2,11 @@
 
 sudo apt install -y git neovim alacritty tmux xclip curl jq zsh gnome-keyring libpam-gnome-keyring dolphin i3-wm i3status dmenu xorg xinit rfkill network-manager build-essential
 
+# Helium Browser
+curl -fsSL https://raw.githubusercontent.com/imputnet/helium-linux/main/pubkey.asc | sudo gpg --dearmor -o /usr/share/keyrings/helium.gpg
+echo "deb [signed-by=/usr/share/keyrings/helium.gpg] https://pkg.helium.computer/deb stable main" | sudo tee /etc/apt/sources.list.d/helium.list
+sudo apt update && sudo apt install helium-bin
+
 
 # Zsh
 if [ "$(basename "$SHELL")" != "zsh" ]; then
