@@ -24,6 +24,21 @@ if [ ! -d "$HOME/.local/bin/pass-cli" ]; then
   curl -fsSL https://proton.me/download/pass-cli/install.sh | bash
   mkdir -p ~/.zfunc
   pass-cli completions zsh > ~/.zfunc/_pass-cli
-  pass-cli login
+  pass-cli login --interactive
+  read -p "Enter your ssh key share id: " shareid
+  read -p "Enter your ssh key item id: " itemid
+  mkdir -p ~/.ssh
+  pass-cli item view --share-id "$shareid" --item-id "$itemid" --output json | tee \
+    >(jq -r '.item.content.content.SshKey.private_key' \
+      > ~/.ssh/id_ed25519) \
+    >(jq -r '.item.content.content.SshKey.public_key' \
+      > ~/.ssh/id_ed25519.pub) \
+    >(jq -r '.item.content.extra_fields[1].content.Text' \
+      >> ~/.ssh/known_hosts) \
+    > /dev/null &&
+  chmod 600 ~/.ssh/id_ed25519 &&
+  chmod 644 ~/.ssh/id_ed25519.pub ~/.ssh/known_hosts
 fi
+
+
 
